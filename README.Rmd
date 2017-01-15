@@ -1,0 +1,45 @@
+---
+title: "Formula E and Electric Vehicles"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Formula E vs Electric vehicles
+
+Is there a correlation between searches for "Formula E" and "Electric vehicles" on Google?
+
+First we download a data files from [Google Trends](https://www.google.co.uk/trends/explore?date=all&q=Formula%20E,electric%20vehicles)
+- [us-searches](raw_data/us-searches.csv), containing searches for the US only. I think this is the chart used in the graphic shared.
+
+```{r us}
+# read in the US data
+usSearches <- read.csv("raw_data/us-searches.csv")
+names(usSearches) <- c("month", "fe", "electric")
+
+# What is the correlation between the two searches?
+cor.test(usSearches$fe, usSearches$electric)
+```
+
+Not really. What we care about above is the final number output, which tells us there's a correlation of -0.278 between the two, suggesting that when searches for one term increase, searches for the other decrease.
+
+```{r echo=F}
+library(lubridate); library(dplyr)
+usSearches$month <- paste0(usSearches$month, "-01")
+usSearches$month <- ymd(usSearches$month)
+```
+
+
+## What about after June 2014, shortly before Formula E began?
+```{r us-recent}
+# Filter the data to 
+recentUS <- usSearches %>% filter(month >= "2014-06-01")
+
+# What is the correlation between the two searches?
+cor.test(recentUS$fe, recentUS$electric)
+```
+This time around, our correlation test tells us that the correlation is 0.326 ("medium", according to [Cohen's rule of thumb](http://staff.bath.ac.uk/pssiw/stats2/page2/page14/page14.html)). However, since our 95% confidence intervals include the number 0, we can't say with any real confidence that the correlation is not 0.
+
+There does not appear to be any significant correlation between searches for Formula E and Electric vehicles.
